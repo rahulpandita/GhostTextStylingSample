@@ -14,8 +14,30 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('textstylingsample.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
+		// get current editor and stylize text in line 1 with ghost text
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const line = editor.document.lineAt(0);
+			// get current cursor position
+			const position = editor.selection.active;
+			// new position is the end of next line
+			const newPosition = position.with(position.line + 1, 0);
+			// add new line in current line and insert ghost text
+			editor.edit(editBuilder => {
+				const text = "Hello World!!";
+				editBuilder.insert(position, text);
+			});
+			//decoration type as ghost text
+			const decorationType = vscode.window.createTextEditorDecorationType({
+				//color is grey
+				color: 'rgba(128,128,128,0.5)',
+				textDecoration: 'italic'
+			});
+			editor.setDecorations(decorationType, [new vscode.Range(position, newPosition)]);
+		}
+			
+
+		
 		vscode.window.showInformationMessage('Hello World from TextStylingSample!');
 	});
 
